@@ -4,28 +4,39 @@ if [[ "$OSTYPE" == "linux-gnu"* ]]; then
       echo "Installing packages for Ubuntu"
       sudo apt update -y
 
-      if test ! $(which vim) || expr $(vim --version | head -1 | grep -o '[0-9]\.[0-9]') \< 8.2; then
-          # Vim not installed or not appropriate version
-          sudo add-apt-repository ppa:jonathonf/vim
-          sudo apt install -y vim
+      if test ! $(which nvim); then
+          echo "Installing neovim"
+          sudo apt install -y neovim
       fi
 
       if test ! $(which zsh); then
-        sudo apt-get install -y zsh
+        echo "Installing zsh"
+        sudo apt install -y zsh
         chsh -s $(which zsh)
       fi
 
       if test ! $(which tmux); then
-        sudo apt-get install -y tmux
+        echo "Installing tmux"
+        sudo apt install -y tmux
       fi
 
       if test ! $(which node); then
+        echo "Installing node"
         curl -fsSL https://deb.nodesource.com/setup_12.x | sudo -E bash -
-        sudo apt-get install -y nodejs
+        sudo apt install -y nodejs
       fi
 
       if test ! $(which rg); then
-        sudo snap install ripgrep --classic
+        echo "Installing ripgrep"
+        sudo apt install -y ripgrep
+      fi
+
+      if test ! $(which bat); then
+        echo "Installing bat"
+
+        # Resolve conflict with ripgrep  (https://github.com/sharkdp/bat/issues/938)
+        sudo sed -i '/\/usr\/.crates2.json/d' /var/lib/dpkg/info/ripgrep.list 
+        sudo apt install -y bat
       fi
 
   fi

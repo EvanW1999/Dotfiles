@@ -29,6 +29,7 @@ alias klogs="kubectl get pods -o name | fzf --preview='kubectl logs {} | tail -3
 alias config='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
 alias k=kubectl
 alias kg="kubectl get"
+alias vim="nvim"
 alias g=git
 
 export CLICOLOR=1
