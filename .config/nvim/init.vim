@@ -7,6 +7,7 @@ Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
 Plug 'vim-airline/vim-airline'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'puremourning/vimspector'
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-surround'
 call plug#end()
@@ -27,6 +28,13 @@ nnoremap <silent> <C-h> :TmuxNavigateLeft<cr>
 nnoremap <silent> <C-j> :TmuxNavigateDown<cr>
 nnoremap <silent> <C-k> :TmuxNavigateUp<cr>
 nnoremap <silent> <C-l> :TmuxNavigateRight<cr>
+" tnoremap <silent> <C-h> <C-\><C-n>:TmuxNavigateLeft<cr>
+" tnoremap <silent> <C-j> <C-\><C-n>:TmuxNavigateDown<cr>
+" tnoremap <silent> <C-k> <C-\><C-n>:TmuxNavigateUp<cr>
+" tnoremap <silent> <C-l> <C-\><C-n>:TmuxNavigateRight<cr>
+tnoremap <silent> <C-d> <C-\><C-n>
+autocmd TermOpen * startinsert
+autocmd WinEnter term://* startinsert
 
 set tabstop=8 softtabstop=4 shiftwidth=4 expandtab smarttab autoindent
 

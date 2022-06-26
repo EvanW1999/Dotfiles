@@ -23,14 +23,12 @@ SAVEHIST=9999
 HISTFILE=~/.zsh_history
 
 alias ll="ls -l"
-alias ls="ls --color"
-alias bat=batcat
 alias klogs="kubectl get pods -o name | fzf --preview='kubectl logs {} | tail -30' --preview-window=up:99%"
 alias config='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
-alias k=kubectl
+alias k="kubectl"
 alias kg="kubectl get"
 alias vim="nvim"
-alias g=git
+alias g="git"
 
 export CLICOLOR=1
 
@@ -61,8 +59,10 @@ if ! zplug check --verbose; then
     fi
     echo
 fi
-export ZSH_AUTOSUGGEST_MANUAL_REBIND=1
+export ZSH_AUTOSUGGEST_MANUAL_REBIND=1 # Speed up autosuggestions
 zplug load
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+
+
