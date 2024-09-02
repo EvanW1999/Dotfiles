@@ -1,15 +1,18 @@
-
 " Vimplug installs plugins
 call plug#begin()
+Plug 'nvim-lua/plenary.nvim'
 Plug 'morhetz/gruvbox'
-Plug 'christoomey/vim-tmux-navigator'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
-Plug 'junegunn/fzf.vim'
-Plug 'vim-airline/vim-airline'
+Plug 'christoomey/vim-tmux-navigator'
+Plug 'nvim-telescope/telescope.nvim'
+Plug 'nvim-telescope/telescope-live-grep-args.nvim'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
-Plug 'puremourning/vimspector'
-Plug 'tpope/vim-fugitive'
+Plug 'lewis6991/gitsigns.nvim'
 Plug 'tpope/vim-surround'
+Plug 'github/copilot.vim'
+Plug 'tpope/vim-fugitive'
+Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+Plug 'ThePrimeagen/harpoon', {'branch': 'harpoon2'}
 call plug#end()
 
 set nu rnu
@@ -23,43 +26,34 @@ let g:gruvbox_italic=1
 let g:gruvbox_bold=1
 colorscheme gruvbox
 
+let mapleader = " "
+
 let g:tmux_navigator_no_mappings = 1
 nnoremap <silent> <C-h> :TmuxNavigateLeft<cr>
 nnoremap <silent> <C-j> :TmuxNavigateDown<cr>
 nnoremap <silent> <C-k> :TmuxNavigateUp<cr>
 nnoremap <silent> <C-l> :TmuxNavigateRight<cr>
-" tnoremap <silent> <C-h> <C-\><C-n>:TmuxNavigateLeft<cr>
-" tnoremap <silent> <C-j> <C-\><C-n>:TmuxNavigateDown<cr>
-" tnoremap <silent> <C-k> <C-\><C-n>:TmuxNavigateUp<cr>
-" tnoremap <silent> <C-l> <C-\><C-n>:TmuxNavigateRight<cr>
+nnoremap <silent> <leader>e :Ex<cr>
+nnoremap <M-N> :silent !tmux next-window<CR>
+nnoremap <M-P> :silent !tmux previous-window<CR>
+tnoremap <silent> <C-h> <C-\><C-n>:TmuxNavigateLeft<cr>
+tnoremap <silent> <C-j> <C-\><C-n>:TmuxNavigateDown<cr>
+tnoremap <silent> <C-k> <C-\><C-n>:TmuxNavigateUp<cr>
+tnoremap <silent> <C-l> <C-\><C-n>:TmuxNavigateRight<cr>
 tnoremap <silent> <C-d> <C-\><C-n>
+tnoremap <M-N> :silent !tmux next-window<CR>
+tnoremap <M-P> :silent !tmux previous-window<CR>
 autocmd TermOpen * startinsert
 autocmd WinEnter term://* startinsert
 
 set tabstop=8 softtabstop=4 shiftwidth=4 expandtab smarttab autoindent
 
-let mapleader = " "
 
-" fzf shortcuts
-nnoremap <leader>f :Files<Cr>
-nnoremap <leader>b :Buffers<Cr>
-nnoremap <leader>h :History<Cr>
-nnoremap <leader>g :Rg<Cr>
-
-command! -bang -nargs=? -complete=dir Files
-    \ call fzf#vim#files(<q-args>, {'options': ['--layout=reverse', '--info=inline', '--preview', '~/.config/nvim/plugged/fzf.vim/bin/preview.sh {}']}, <bang>0)
-
-command! -bang -nargs=* Rg
-  \ call fzf#vim#grep(
-  \   'rg --column --line-number --no-heading --color=always --smart-case '.shellescape(<q-args>), 1,
-  \   fzf#vim#with_preview(), <bang>0)
-
-let g:airline_powerline_fonts = 1
-
+let g:coc_disable_startup_warning = 1
 " Coc Config Settings
 " TextEdit might fail if hidden is not set.
-set hidden
-
+" set hidden
+"
 " Some servers have issues with backup files, see #649.
 set nobackup
 set nowritebackup
@@ -68,8 +62,7 @@ set nowritebackup
 set cmdheight=2
 
 " Having longer updatetime (default is 4000 ms = 4 s) leads to noticeable
-" delays and poor user experience.
-set updatetime=300
+" delays and poor user experience. set updatetime=300
 
 " Don't pass messages to |ins-completion-menu|.
 set shortmess+=c
@@ -114,9 +107,6 @@ nmap <silent> gy <Plug>(coc-type-definition)
 nmap <silent> gi <Plug>(coc-implementation)
 nmap <silent> gr <Plug>(coc-references)
 
-" Use K to show documentation in preview window.
-nnoremap <silent> K :call <SID>show_documentation()<CR>
-
 function! s:show_documentation()
   if (index(['vim','help'], &filetype) >= 0)
     execute 'h '.expand('<cword>')
@@ -134,6 +124,48 @@ nmap <leader>rn <Plug>(coc-rename)
 " Formatting selected code.
 xmap <leader>F  <Plug>(coc-format-selected)
 nmap <leader>F  <Plug>(coc-format-selected)
+xmap <leader><C-F>  <Plug>(coc-format)
+nmap <leader><C-F>  <Plug>(coc-format)
+
+" Applying code actions to the selected code block
+" Example: `<leader>aap` for current paragraph
+xmap <leader>a  <Plug>(coc-codeaction-selected)
+nmap <leader>a  <Plug>(coc-codeaction-selected)
+
+" Remap keys for applying code actions at the cursor position
+nmap <leader>ac  <Plug>(coc-codeaction-cursor)
+" Remap keys for apply code actions affect whole buffer
+nmap <leader>as  <Plug>(coc-codeaction-source)
+" Apply the most preferred quickfix action to fix diagnostic on the current line
+nmap <leader>qf  <Plug>(coc-fix-current)
+
+" Remap keys for applying refactor code actions
+nmap <silent> <leader>re <Plug>(coc-codeaction-refactor)
+xmap <silent> <leader>r  <Plug>(coc-codeaction-refactor-selected)
+nmap <silent> <leader>r  <Plug>(coc-codeaction-refactor-selected)
+
+" Run the Code Lens action on the current line
+nmap <leader>cl  <Plug>(coc-codelens-action)
+
+" Map function and class text objects
+" NOTE: Requires 'textDocument.documentSymbol' support from the language server
+xmap if <Plug>(coc-funcobj-i)
+omap if <Plug>(coc-funcobj-i)
+xmap af <Plug>(coc-funcobj-a)
+omap af <Plug>(coc-funcobj-a)
+xmap ic <Plug>(coc-classobj-i)
+omap ic <Plug>(coc-classobj-i)
+xmap ac <Plug>(coc-classobj-a)
+omap ac <Plug>(coc-classobj-a)
+" Remap <C-f> and <C-b> to scroll float windows/popups
+if has('nvim-0.4.0') || has('patch-8.2.0750')
+  nnoremap <silent><nowait><expr> <C-f> coc#float#has_scroll() ? coc#float#scroll(1) : "\<C-f>"
+  nnoremap <silent><nowait><expr> <C-b> coc#float#has_scroll() ? coc#float#scroll(0) : "\<C-b>"
+  inoremap <silent><nowait><expr> <C-f> coc#float#has_scroll() ? "\<c-r>=coc#float#scroll(1)\<cr>" : "\<Right>"
+  inoremap <silent><nowait><expr> <C-b> coc#float#has_scroll() ? "\<c-r>=coc#float#scroll(0)\<cr>" : "\<Left>"
+  vnoremap <silent><nowait><expr> <C-f> coc#float#has_scroll() ? coc#float#scroll(1) : "\<C-f>"
+  vnoremap <silent><nowait><expr> <C-b> coc#float#has_scroll() ? coc#float#scroll(0) : "\<C-b>"
+endif
 
 " Use <TAB> for selections ranges.
 " NOTE: Requires 'textDocument/selectionRange' support from the language server.
@@ -141,15 +173,22 @@ nmap <leader>F  <Plug>(coc-format-selected)
 nmap <silent> <leader>s <Plug>(coc-range-select)
 xmap <silent> <leader>s <Plug>(coc-range-select)
 
-" Add (Neo)Vim's native statusline support.
-" NOTE: Please see `:h coc-status` for integrations with external plugins that
-" provide custom statusline: lightline.vim, vim-airline.
-set statusline^=%{coc#status()}%{get(b:,'coc_current_function','')}
+" Add `:Format` command to format current buffer
+command! -nargs=0 Format :call CocActionAsync('format')
+
+" Add `:Fold` command to fold current buffer
+command! -nargs=? Fold :call     CocAction('fold', <f-args>)
+
+" Add `:OR` command for organize imports of the current buffer
+command! -nargs=0 OR   :call     CocActionAsync('runCommand', 'editor.action.organizeImport')
 
 inoremap {<CR> {<CR>}<ESC>O
 inoremap {;<CR> {<CR>};<ESC>O
-let $FZF_DEFAULT_COMMAND = 'rg --files'
-let g:fzf_layout = {'up':'~90%', 'window': { 'width': 0.8, 'height': 0.8,'yoffset':0.5,'xoffset': 0.5, 'highlight': 'Todo', 'border': 'sharp' } }
-
 
 noremap <silent> <space>p  :<C-u>CocListResume<CR>
+
+lua require('config/treesitter')
+lua require('config/telescope')
+lua require('config/gitsigns')
+lua require('config/harpoon')
+packadd termdebug
